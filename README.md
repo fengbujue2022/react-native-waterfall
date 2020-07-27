@@ -8,23 +8,22 @@ tiny & virtualized waterfall layout component
 
 ## Usage
 
-```javascript
+```Typescript
 import Waterfall from "react-native-virtualized-waterfall";
 
 
-fetchItems(){
-  //...
+fetchItems(columnWidth:number) {
+  //...fetch data and mapping to itemInfo
 }
 
 render(){
-  return 
+  return
     <Waterfall
         onInitData={(columnWidth) => this.fetchItems(columnWidth)}
         columnCount={2}
         columnGap={this.columnGap}
         itemInfoData={this.items}
         bufferAmount={10}
-        bounces={true}
         renderItem={(
           {
             item,
