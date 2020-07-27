@@ -1,6 +1,6 @@
 # react-native-waterfall
 
-tiny & virtualized waterfall layout component
+a virtualized & infinite waterfall layout component for React-Native
 
 ## Getting started
 
