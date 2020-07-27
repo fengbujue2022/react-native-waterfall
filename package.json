@@ -1,26 +1,26 @@
 {
-  "name": "react-native-waterfall",
-  "title": "React Native Waterfall",
-  "version": "1.0.0",
+  "name": "react-native-virtualized-waterfall",
+  "title": "React Native Virtualized Waterfall",
+  "version": "1.0.1",
   "description": "tiny & virtualized waterfall layout component",
   "main": "index.js",
   "files": [
     "README.md",
     "build",
-    "index.js",
-    "react-native-waterfall.podspec"
+    "index.js"
   ],
   "scripts": {
     "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/github_account/react-native-waterfall.git",
-    "baseUrl": "https://github.com/github_account/react-native-waterfall"
+    "url": "git+https://github.com/Feng-Bu-Jue/react-native-waterfall.git",
+    "baseUrl": "https://github.com/Feng-Bu-Jue/react-native-waterfall"
   },
   "keywords": [
     "react-native",
-    "waterfall"
+    "waterfall",
+    "virtual-list"
   ],
   "author": {
     "name": "Feng-Bu-Jue",
