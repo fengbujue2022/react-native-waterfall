@@ -4,7 +4,9 @@ tiny & virtualized waterfall layout component
 
 ## Getting started
 
-`$ npm install react-native-virtualized-waterfall --save`
+`$ npm i react-native-virtualized-waterfall`
+or
+`$ yarn add react-native-virtualized-waterfall`
 
 ## Usage
 
