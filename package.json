@@ -1,16 +1,12 @@
 {
   "name": "react-native-virtualized-waterfall",
   "title": "React Native Virtualized Waterfall",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "tiny & virtualized waterfall layout component",
-  "main": "index.js",
-  "files": [
-    "README.md",
-    "build",
-    "index.js"
-  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "rimraf build && tsc -p ."
   },
   "repository": {
     "type": "git",
@@ -20,7 +16,8 @@
   "keywords": [
     "react-native",
     "waterfall",
-    "virtual-list"
+    "virtual-list",
+    "typescript"
   ],
   "author": {
     "name": "Feng-Bu-Jue",
