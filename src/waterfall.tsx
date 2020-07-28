@@ -35,7 +35,7 @@ export type WaterfallProps<TItem> = {
   refreshControlProps?: RefreshControlPropsIOS & RefreshControlPropsAndroid;
   style?: StyleProp<ImageStyle>;
   containerStyle?: StyleProp<ImageStyle>;
-} & ScrollViewProps;
+} & Partial<ScrollViewProps>;
 
 type State = {
   columnWidth: number;
@@ -79,7 +79,7 @@ export default class Waterfall<TItem = any> extends React.Component<
   itemsRunwayOffset = new Animated.Value(0);
 
   scrollHeight = 0;
-  scrollWidth = 0;
+  ItemsRunwayWidth = 0;
   lastMeasuredIndex = -1;
 
   itemPositions: Array<{ offsetLeft: number; offsetTop: number }> = [];
@@ -142,16 +142,25 @@ export default class Waterfall<TItem = any> extends React.Component<
     });
   };
 
-  private onItemsBoxLayout = ({
+  private onScrollLayout = ({
     nativeEvent: {
-      layout: { width, height },
+      layout: { height },
     },
   }: LayoutChangeEvent) => {
-    if (this.scrollWidth !== width) {
+    if (this.scrollHeight !== height) {
+      this.scrollHeight = height;
+    }
+  };
+
+  private onItemsRunwayLayout = ({
+    nativeEvent: {
+      layout: { width },
+    },
+  }: LayoutChangeEvent) => {
+    if (this.ItemsRunwayWidth !== width) {
       const { columnCount, columnGap, itemInfoData } = this.props;
 
-      this.scrollWidth = width;
-      this.scrollHeight = height;
+      this.ItemsRunwayWidth = width;
       const newColumnWidth =
         (width - (columnCount - 1) * columnGap!) / columnCount;
       if (!itemInfoData?.length) {
@@ -196,7 +205,7 @@ export default class Waterfall<TItem = any> extends React.Component<
   evaluateVisibleRange() {
     let { offset } = this.state;
     const { itemInfoData, bufferAmount } = this.props;
-    const maxOffset = offset + this.scrollHeight * 2;
+    const maxOffset = offset + this.scrollHeight * 1.5;
     const itemCount = itemInfoData.length;
     let start = 0;
 
@@ -342,7 +351,7 @@ export default class Waterfall<TItem = any> extends React.Component<
     }
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container]}>
         <ScrollView
           ref={(r) => (this.scrollViewRef = r)}
           style={style}
@@ -351,6 +360,7 @@ export default class Waterfall<TItem = any> extends React.Component<
             this.onScroll(e);
             onScroll?.call(undefined, e);
           }}
+          onLayout={this.onScrollLayout}
           refreshControl={
             onRefresh ? (
               <RefreshControl
@@ -366,7 +376,7 @@ export default class Waterfall<TItem = any> extends React.Component<
           <Animated.View style={[styles.container, containerStyle]}>
             <Animated.View
               style={{ height: this.itemsRunwayOffset }}
-              onLayout={this.onItemsBoxLayout}
+              onLayout={this.onItemsRunwayLayout}
             >
               {items}
             </Animated.View>
