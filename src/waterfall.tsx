@@ -119,7 +119,8 @@ export default class Waterfall<TItem = any> extends React.Component<
     this.setState({ offset: y });
     if (
       y + height >= contentHeight - 20 &&
-      this.lastMeasuredIndex === this.props.itemInfoData.length - 1
+      this.lastMeasuredIndex === this.props.itemInfoData.length - 1 &&
+      !this.state.isRefreshing
     ) {
       this.onInfinite();
     }
@@ -230,7 +231,6 @@ export default class Waterfall<TItem = any> extends React.Component<
         compare,
       });
     }
-
     offset =
       this.getPositionForIndex(start).offsetTop + itemInfoData[start].size;
 
@@ -322,7 +322,7 @@ export default class Waterfall<TItem = any> extends React.Component<
       refreshControlProps,
       ...rest
     } = this.props;
-    const { columnWidth, isLoading } = this.state;
+    const { columnWidth, isLoading, isRefreshing } = this.state;
     const items: React.ReactNodeArray = [];
 
     if (columnWidth && itemInfoData.length) {
@@ -345,7 +345,6 @@ export default class Waterfall<TItem = any> extends React.Component<
           </View>
         );
       }
-
       const runwayOffset = this.getHighestOffsetColumn()[1];
       this.itemsRunwayOffset.setValue(runwayOffset);
     }
@@ -354,6 +353,7 @@ export default class Waterfall<TItem = any> extends React.Component<
       <View style={[styles.container]}>
         <ScrollView
           ref={(r) => (this.scrollViewRef = r)}
+          scrollEnabled={!isRefreshing}
           style={style}
           bounces={false}
           onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
