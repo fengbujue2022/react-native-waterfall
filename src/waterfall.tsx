@@ -14,6 +14,7 @@ import {
   RefreshControlPropsIOS,
   RefreshControlPropsAndroid,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 
 export type WaterfallProps<TItem> = {
@@ -26,7 +27,7 @@ export type WaterfallProps<TItem> = {
     columnWidth: number,
     index: number
   ) => React.ReactNode;
-  renderLoadMore?: () => React.ReactNode;
+  renderLoadMore?: (isLoading: boolean) => React.ReactNode;
   onInitData: (columnWidth: number) => Promise<void>;
   onInfinite?: (columnWidth: number) => Promise<void>;
   onRefresh?: (columnWidth: number) => Promise<void>;
@@ -55,8 +56,14 @@ export default class Waterfall<TItem = any> extends React.Component<
   static defaultProps: Partial<WaterfallProps<any>> = {
     columnGap: 0,
     bufferAmount: 10,
-    renderLoadMore: () => (
-      <View style={styles.loadingMoreBox}>
+    renderLoadMore: (isLoading) => (
+      <View
+        style={[
+          styles.loadingMoreBox,
+          // eslint-disable-next-line react-native/no-inline-styles
+          isLoading ? { opacity: 1 } : { opacity: 0 },
+        ]}
+      >
         <ActivityIndicator
           style={styles.loadingMoreIndicator}
           size="small"
@@ -67,6 +74,7 @@ export default class Waterfall<TItem = any> extends React.Component<
     ),
   };
 
+  scrollViewRef: ScrollView | null = null;
   scrollOffset = new Animated.Value(0);
   itemsRunwayOffset = new Animated.Value(0);
 
@@ -91,6 +99,14 @@ export default class Waterfall<TItem = any> extends React.Component<
 
   getColumnWidth = () => {
     return this.state.columnWidth;
+  };
+
+  scrollTo = (
+    y?: number | { x?: number; y?: number; animated?: boolean },
+    x?: number,
+    animated?: boolean
+  ): void => {
+    this.scrollViewRef?.scrollTo(y, x, animated);
   };
 
   private onScroll = ({
@@ -155,28 +171,26 @@ export default class Waterfall<TItem = any> extends React.Component<
   };
 
   private getOffsetColumn(predicate: (a: number, b: number) => boolean) {
-    let index = 0;
-    let value = 0;
-    if (this.itemOffsetTops.length) {
-      value = this.itemOffsetTops.reduce((p, c, i) => {
-        if (predicate(p, c)) {
-          index = i - 1;
-          return p;
-        } else {
-          index = i;
-          return c;
-        }
-      });
-    }
-    return [index, value];
+    let index: undefined | number;
+    let value: undefined | number;
+    this.itemOffsetTops.forEach((item, i) => {
+      if (
+        (index === undefined && value === undefined) ||
+        predicate(item, value!)
+      ) {
+        value = item;
+        index = i;
+      }
+    });
+    return [index!, value!];
   }
 
   getLowestOffsetColumn() {
-    return this.getOffsetColumn((a, b) => a <= b);
+    return this.getOffsetColumn((p, c) => p < c);
   }
 
   getHighestOffsetColumn() {
-    return this.getOffsetColumn((a, b) => a >= b);
+    return this.getOffsetColumn((p, c) => p > c);
   }
 
   evaluateVisibleRange() {
@@ -306,14 +320,14 @@ export default class Waterfall<TItem = any> extends React.Component<
       const [start, end] = this.evaluateVisibleRange();
 
       for (let i = start; i <= end; i++) {
-        const posistion = this.getPositionForIndex(i);
+        const position = this.getPositionForIndex(i);
         items.push(
           <View
             key={i}
             style={{
               ...styles.item,
-              top: posistion.offsetTop,
-              left: posistion.offsetLeft,
+              top: position.offsetTop,
+              left: position.offsetLeft,
               width: columnWidth,
               height: itemInfoData[i].size,
             }}
@@ -329,7 +343,8 @@ export default class Waterfall<TItem = any> extends React.Component<
 
     return (
       <View style={styles.container}>
-        <Animated.ScrollView
+        <ScrollView
+          ref={(r) => (this.scrollViewRef = r)}
           style={style}
           bounces={false}
           onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -356,8 +371,8 @@ export default class Waterfall<TItem = any> extends React.Component<
               {items}
             </Animated.View>
           </Animated.View>
-          {!!onInfinite && isLoading && renderLoadMore?.call(undefined)}
-        </Animated.ScrollView>
+          {!!onInfinite && renderLoadMore?.call(undefined, isLoading)}
+        </ScrollView>
       </View>
     );
   }

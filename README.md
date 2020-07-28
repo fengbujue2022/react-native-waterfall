@@ -14,7 +14,7 @@ or
 import Waterfall from "react-native-virtualized-waterfall";
 
 
-fetchItems(columnWidth:number) {
+fetchItems(columnWidth:number,reload:boolean=false): Promise<void> {
   //...fetch data and mapping to itemInfo
 }
 
