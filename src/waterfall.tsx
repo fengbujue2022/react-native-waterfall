@@ -5,7 +5,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   StyleProp,
-  ImageStyle,
+  ViewStyle,
   ScrollViewProps,
   Animated,
   LayoutChangeEvent,
@@ -33,8 +33,8 @@ export type WaterfallProps<TItem> = {
   onRefresh?: (columnWidth: number) => Promise<void>;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   refreshControlProps?: RefreshControlPropsIOS & RefreshControlPropsAndroid;
-  style?: StyleProp<ImageStyle>;
-  containerStyle?: StyleProp<ImageStyle>;
+  style?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
 } & Partial<ScrollViewProps>;
 
 type State = {
