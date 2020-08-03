@@ -22,7 +22,7 @@ render(){
   return
     <Waterfall
         onInitData={(columnWidth) => this.fetchItems(columnWidth)}
-        columnCount={2}
+        columnNum={2}
         columnGap={this.columnGap}
         itemInfoData={this.items}
         bufferAmount={10}
