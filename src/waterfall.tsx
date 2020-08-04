@@ -42,8 +42,8 @@ export type WaterfallProps<TItem> = {
 type State = {
   columnWidth: number;
   offset: number;
-  isRefreshing: boolean;
-  isLoading: boolean;
+  refreshing: boolean;
+  loading: boolean;
 };
 
 export type ItemInfo<TItem> = {
@@ -58,12 +58,12 @@ export default class Waterfall<TItem = any> extends React.Component<
   static defaultProps: Partial<WaterfallProps<any>> = {
     columnGap: 0,
     bufferAmount: 10,
-    renderLoadMore: (isLoading) => (
+    renderLoadMore: (loading) => (
       <View
         style={[
           styles.loadingMoreBox,
           // eslint-disable-next-line react-native/no-inline-styles
-          isLoading ? { opacity: 1 } : { opacity: 0 },
+          loading ? { opacity: 1 } : { opacity: 0 },
         ]}
       >
         <ActivityIndicator
@@ -93,8 +93,8 @@ export default class Waterfall<TItem = any> extends React.Component<
     const state: State = {
       offset: 0,
       columnWidth: 0,
-      isRefreshing: false,
-      isLoading: false,
+      refreshing: false,
+      loading: false,
     };
     this.state = state;
   }
@@ -128,24 +128,25 @@ export default class Waterfall<TItem = any> extends React.Component<
     if (
       y + height >= contentHeight - 20 &&
       this.lastMeasuredIndex === this.props.itemInfoData.length - 1 &&
-      !this.state.isRefreshing
+      !this.state.refreshing &&
+      !this.state.loading
     ) {
       this.onInfinite();
     }
   };
 
   private onRefresh = () => {
-    this.setState({ isRefreshing: true });
+    this.setState({ refreshing: true });
     return this.props.onRefresh!(this.state.columnWidth).finally(() => {
       this.reset();
-      this.setState({ isRefreshing: false });
+      this.setState({ refreshing: false });
     });
   };
 
   private onInfinite = () => {
-    this.setState({ isLoading: true });
+    this.setState({ loading: true });
     return this.props.onInfinite!(this.state.columnWidth).finally(() => {
-      this.setState({ isLoading: false });
+      this.setState({ loading: false });
     });
   };
 
@@ -179,13 +180,15 @@ export default class Waterfall<TItem = any> extends React.Component<
   };
 
   private onInitData = (columnWidth: number) => {
-    this.setState({ isRefreshing: true });
+    this.setState({ refreshing: true });
     return this.props.onInitData(columnWidth).finally(() => {
-      this.setState({ isRefreshing: false });
+      this.setState({ refreshing: false });
     });
   };
 
-  private getOffsetColumn(predicate: (a: number, b: number) => boolean) {
+  private getOffsetColumn(
+    predicate: (a: number, b: number) => boolean
+  ): [number, number] {
     let index: undefined | number;
     let value: undefined | number;
     this.itemOffsetTops.forEach((item, i) => {
@@ -197,7 +200,7 @@ export default class Waterfall<TItem = any> extends React.Component<
         index = i;
       }
     });
-    return [index!, value!];
+    return [index || 0, value || 0];
   }
 
   getLowestOffsetColumn() {
@@ -219,6 +222,7 @@ export default class Waterfall<TItem = any> extends React.Component<
       this.lastMeasuredIndex >= 0
         ? this.getPositionForIndex(this.lastMeasuredIndex).offsetTop
         : 0;
+    const lastMeasuredIndex = Math.max(0, this.lastMeasuredIndex);
 
     const compare = (i: number) =>
       this.getPositionForIndex(i).offsetTop <= offset;
@@ -226,13 +230,13 @@ export default class Waterfall<TItem = any> extends React.Component<
     if (lastMeasuredOffset >= offset) {
       start = this.binarySearch({
         minIndex: 0,
-        maxIndex: this.lastMeasuredIndex,
+        maxIndex: lastMeasuredIndex,
         compare,
       });
     } else {
       start = this.exponentialSearch({
         arrayLength: itemCount,
-        index: this.lastMeasuredIndex,
+        index: lastMeasuredIndex,
         compare,
       });
     }
@@ -328,10 +332,10 @@ export default class Waterfall<TItem = any> extends React.Component<
       containerStyle,
       refreshControlProps,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      children, //
+      children,
       ...rest
     } = this.props;
-    const { columnWidth, isLoading, isRefreshing } = this.state;
+    const { columnWidth, loading, refreshing } = this.state;
     const items: React.ReactNodeArray = [];
     if (columnWidth && itemInfoData.length) {
       const [start, end] = this.evaluateVisibleRange();
@@ -361,7 +365,6 @@ export default class Waterfall<TItem = any> extends React.Component<
       <View style={[styles.container]}>
         <ScrollView
           ref={(r) => (this.scrollViewRef = r)}
-          scrollEnabled={!isRefreshing}
           style={style}
           bounces={false}
           onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -372,7 +375,7 @@ export default class Waterfall<TItem = any> extends React.Component<
           refreshControl={
             onRefresh ? (
               <RefreshControl
-                refreshing={this.state.isRefreshing}
+                refreshing={refreshing}
                 onRefresh={this.onRefresh}
                 {...refreshControlProps}
               />
@@ -389,9 +392,9 @@ export default class Waterfall<TItem = any> extends React.Component<
             >
               {items}
             </Animated.View>
+            {!!onInfinite && renderLoadMore?.call(undefined, loading)}
             {FooterComponent}
           </Animated.View>
-          {!!onInfinite && renderLoadMore?.call(undefined, isLoading)}
         </ScrollView>
       </View>
     );
