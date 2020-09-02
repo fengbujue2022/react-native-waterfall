@@ -4,9 +4,18 @@ a virtualized & infinite waterfall layout component for React-Native
 
 ## Getting started
 
-`$ npm i react-native-virtualized-waterfall`
+`npm i react-native-virtualized-waterfall`
+
 or
-`$ yarn add react-native-virtualized-waterfall`
+
+`yarn add react-native-virtualized-waterfall`
+
+## Preview
+
+related project: [h.bilibli-rn](https://github.com/Feng-Bu-Jue/h.bilibili-rn "Heading link")
+
+![h.bilibili](https://i.loli.net/2020/09/02/mFa6XNckYn5UAvK.gif)
+
 
 ## Usage
 
