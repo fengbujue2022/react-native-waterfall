@@ -1,14 +1,14 @@
 {
   "name": "react-native-virtualized-waterfall",
   "title": "React Native Virtualized Waterfall",
-  "version": "1.0.9",
+  "version": "1.1.7",
   "description": "a virtualized & infinite waterfall layout component for React-Native",
   "main": "build/index.js",
+  "module": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc -p .",
-    "prepare": "npm run build",
-    "publish":"npm run build && npm publish"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
