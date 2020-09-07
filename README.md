@@ -12,7 +12,7 @@ or
 
 ## Preview
 
-[demo](https://codesandbox.io/s/waterfall-demo-rxkww?file=/src/App.tsx "Heading link")
+[online-demo](https://codesandbox.io/s/waterfall-demo-rxkww?file=/src/App.tsx "Heading link")
 
 related project: [h.bilibli-rn](https://github.com/Feng-Bu-Jue/h.bilibili-rn "Heading link")
 
