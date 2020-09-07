@@ -16,6 +16,11 @@ related project: [h.bilibli-rn](https://github.com/Feng-Bu-Jue/h.bilibili-rn "He
 
 ![h.bilibili](https://i.loli.net/2020/09/02/mFa6XNckYn5UAvK.gif)
 
+## Props
+
+please refer to type definition
+
+*This project layout through known item height,so you must got item size before render
 
 ## Usage
 
@@ -33,7 +38,7 @@ render(){
         onInitData={(columnWidth) => this.fetchItems(columnWidth)}
         columnNum={2}
         columnGap={this.columnGap}
-        itemInfoData={this.items}
+        itemInfoData={this.items} // 
         bufferAmount={10}
         renderItem={(
           {
@@ -47,7 +52,7 @@ render(){
         ) => {
           const ratio = 1;
           return (
-              <FastImage
+              <Image
                 style={{
                   height: size,
                   width: ratio * size,
