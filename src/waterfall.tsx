@@ -131,7 +131,8 @@ export default class Waterfall<TItem = any> extends React.Component<
       y + height >= contentHeight - this.props.infiniteThreshold! &&
       this.lastMeasuredIndex === this.props.itemInfoData.length - 1 &&
       !this.state.refreshing &&
-      !this.state.loading
+      !this.state.loading &&
+      this.props.onInfinite
     ) {
       this.onInfinite();
     }
