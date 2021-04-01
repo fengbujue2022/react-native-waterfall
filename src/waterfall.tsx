@@ -33,7 +33,6 @@ export interface WaterfallProps<TItem> extends ScrollViewProps {
   renderLoadMore?: (isLoading: boolean) => React.ReactNode;
   HeaderComponent?: React.ComponentType<any> | React.ReactElement;
   FooterComponent?: React.ComponentType<any> | React.ReactElement;
-  onInitData: () => Promise<void>;
   onInfinite?: () => Promise<void>;
   onRefresh?: () => Promise<void>;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -79,7 +78,7 @@ export default class Waterfall<TItem = any> extends React.Component<
   scrollOffset = new Animated.Value(0);
   itemsRunwayOffset = new Animated.Value(0);
 
-  scrollHeight = 0;
+  scrollHeight?: number;
   itemsRunwayWidth = 0;
   lastMeasuredIndex = -1;
 
@@ -166,25 +165,16 @@ export default class Waterfall<TItem = any> extends React.Component<
     },
   }: LayoutChangeEvent) => {
     if (this.itemsRunwayWidth !== width) {
-      const { columnNum, columnGap, itemInfos } = this.props;
+      const { columnNum, columnGap } = this.props;
 
       this.itemsRunwayWidth = width;
       const newColumnWidth = (width - (columnNum - 1) * columnGap!) / columnNum;
-      if (!itemInfos?.length) {
-        this.onInitData();
-      }
+
       this.reset();
       this.setState({
         columnWidth: newColumnWidth,
       });
     }
-  };
-
-  private onInitData = () => {
-    this.setState({ refreshing: true });
-    return this.props.onInitData().finally(() => {
-      this.setState({ refreshing: false });
-    });
   };
 
   private getOffsetColumn(
@@ -215,7 +205,7 @@ export default class Waterfall<TItem = any> extends React.Component<
   evaluateVisibleRange() {
     let { offset, columnWidth } = this.state;
     const { itemInfos, bufferAmount, heightGetter } = this.props;
-    const maxOffset = offset + this.scrollHeight * 1.5;
+    const maxOffset = offset + this.scrollHeight! * 1.5;
     const itemCount = itemInfos.length;
     let start = 0;
 
@@ -341,7 +331,7 @@ export default class Waterfall<TItem = any> extends React.Component<
     } = this.props;
     const { columnWidth, loading, refreshing } = this.state;
     const items: React.ReactNodeArray = [];
-    if (columnWidth && itemInfos.length) {
+    if (columnWidth && this.scrollHeight !== undefined && itemInfos.length) {
       const [start, end] = this.evaluateVisibleRange();
 
       for (let i = start; i <= end; i++) {
@@ -395,15 +385,17 @@ export default class Waterfall<TItem = any> extends React.Component<
           {...(rest as any)}
         >
           {HeaderComponent}
-          <Animated.View style={[styles.container, containerStyle]}>
-            <Animated.View
-              style={[{ height: this.itemsRunwayOffset }, containerStyle]}
-              onLayout={this.onItemsRunwayLayout}
-            >
-              {items}
+          {this.scrollHeight !== undefined && (
+            <Animated.View style={[styles.container, containerStyle]}>
+              <Animated.View
+                style={[{ height: this.itemsRunwayOffset }, containerStyle]}
+                onLayout={this.onItemsRunwayLayout}
+              >
+                {items}
+              </Animated.View>
+              {!!onInfinite && renderLoadMore?.call(undefined, loading)}
             </Animated.View>
-            {!!onInfinite && renderLoadMore?.call(undefined, loading)}
-          </Animated.View>
+          )}
           {FooterComponent}
         </ScrollView>
       </View>

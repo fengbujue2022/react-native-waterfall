@@ -22,51 +22,37 @@ related project: [h.bilibli-rn](https://github.com/Feng-Bu-Jue/h.bilibili-rn "He
 
 please refer to type definition
 
-*This project layout through known item height,so you must got item size before render
+\*This project layout through known item height,so you must got item size before render
 
 ## Usage
 
 ```Typescript
 import Waterfall from "react-native-virtualized-waterfall";
 
-
-fetchItems(columnWidth:number,reload:boolean=false): Promise<void> {
-  //...fetch data and mapping to itemInfo
-}
-
-render(){
-  return
-    <Waterfall
-        onInitData={(columnWidth) => this.fetchItems(columnWidth)}
-        columnNum={2}
-        columnGap={this.columnGap}
-        itemInfoData={this.items} // 
-        bufferAmount={10}
-        renderItem={(
-          {
-            item,
-            size,
-          }: {
-            item: any;
-            size: number;
-          },
-          columnWidth: number,
-        ) => {
-          const ratio = 1;
-          return (
-              <Image
-                style={{
-                  height: size,
-                  width: ratio * size,
-                }}
-                {...}
-              />
-          );
-        }}
-        onRefresh={(columnWidth) => {
-          this.pageNum = 1;
-          return this.fetchItems(columnWidth, true);
-        }}
-        onInfinite={(columnWidth) => this.fetchItems(columnWidth)} />
-}
+<Waterfall
+    columnNum={2}
+    columnGap={this.columnGap}
+    itemInfos={this.items}
+    bufferAmount={10}
+    heightGetter={this.heightGetter.bind(this)}
+    renderItem={(
+      itemInfo,
+      width,
+      index
+    ) => {
+      return (
+          <Image
+            style={{
+              height: this.heightGetter(width,index),
+              width: width,
+            }}
+            {...}
+          />
+      );
+    }}
+    onRefresh={() => {
+      this.pageNum = 1;
+      return this.fetchItems(true);
+    }}
+    onInfinite={() => this.fetchItems()} />
 ```
