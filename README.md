@@ -35,10 +35,6 @@ import Waterfall from "react-native-virtualized-waterfall";
         itemInfos={this.state.items}
         bufferAmount={10}
         infiniteThreshold={500}
-        containerStyle={{
-          paddingRight: 10,
-          paddingLeft: 10
-        }}
         heightGetter={this.heightGetter.bind(this)}
         renderItem={(itemInfo, width, height, index) => {
           return (
