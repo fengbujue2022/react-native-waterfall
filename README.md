@@ -30,29 +30,35 @@ please refer to type definition
 import Waterfall from "react-native-virtualized-waterfall";
 
 <Waterfall
-    columnNum={2}
-    columnGap={this.columnGap}
-    itemInfos={this.items}
-    bufferAmount={10}
-    heightGetter={this.heightGetter.bind(this)}
-    renderItem={(
-      itemInfo,
-      width,
-      index
-    ) => {
-      return (
-          <Image
-            style={{
-              height: this.heightGetter(width,index),
-              width: width,
-            }}
-            {...}
-          />
-      );
-    }}
-    onRefresh={() => {
-      this.pageNum = 1;
-      return this.fetchItems(true);
-    }}
-    onInfinite={() => this.fetchItems()} />
+        columnNum={2}
+        columnGap={10}
+        itemInfos={this.state.items}
+        bufferAmount={10}
+        infiniteThreshold={500}
+        containerStyle={{
+          paddingRight: 10,
+          paddingLeft: 10
+        }}
+        heightGetter={this.heightGetter.bind(this)}
+        renderItem={(itemInfo, width, height, index) => {
+          return (
+            <Image
+              style={{
+                height,
+                width
+              }}
+              height={height}
+              width={width}
+              source={{
+                uri: itemInfo.url
+              }}
+              resizeMode={"contain"}
+            />
+          );
+        }}
+        onRefresh={() => {
+          return this.fetchItems(true);
+        }}
+        onInfinite={() => this.fetchItems()}
+      />
 ```
