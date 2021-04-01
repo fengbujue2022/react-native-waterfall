@@ -38,12 +38,13 @@ import Waterfall from "react-native-virtualized-waterfall";
     renderItem={(
       itemInfo,
       width,
+      hegiht,
       index
     ) => {
       return (
           <Image
             style={{
-              height: this.heightGetter(width,index),
+              height: hegiht,
               width: width,
             }}
             {...}
