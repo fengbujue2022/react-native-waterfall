@@ -1,7 +1,7 @@
 {
   "name": "react-native-virtualized-waterfall",
   "title": "React Native Virtualized Waterfall",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "a virtualized & infinite waterfall layout component for React-Native",
   "main": "build/index.js",
   "module": "build/index.js",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import {
   View,
   Text,
@@ -79,6 +79,7 @@ export default class Waterfall<TItem = any> extends React.Component<
   itemsRunwayOffset = new Animated.Value(0);
 
   scrollHeight?: number;
+  headerHeight?: number;
   itemsRunwayWidth = 0;
   lastMeasuredIndex = -1;
 
@@ -159,6 +160,16 @@ export default class Waterfall<TItem = any> extends React.Component<
     }
   };
 
+  private onHeaderLayout = ({
+    nativeEvent: {
+      layout: { height },
+    },
+  }: LayoutChangeEvent) => {
+    if (this.headerHeight !== height) {
+      this.headerHeight = height;
+    }
+  };
+
   private onItemsRunwayLayout = ({
     nativeEvent: {
       layout: { width },
@@ -215,6 +226,7 @@ export default class Waterfall<TItem = any> extends React.Component<
         : 0;
     const lastMeasuredIndex = Math.max(0, this.lastMeasuredIndex);
 
+    offset = Math.max(offset - (this.headerHeight || 0), 0);
     const compare = (i: number) =>
       this.getPositionForIndex(i).offsetTop <= offset;
 
@@ -330,7 +342,7 @@ export default class Waterfall<TItem = any> extends React.Component<
       ...rest
     } = this.props;
     const { columnWidth, loading, refreshing } = this.state;
-    const items: React.ReactNodeArray = [];
+    const items: ReactNode[] = [];
     if (columnWidth && itemInfos.length) {
       const [start, end] = this.evaluateVisibleRange();
 
@@ -384,7 +396,7 @@ export default class Waterfall<TItem = any> extends React.Component<
           scrollEventThrottle={20}
           {...(rest as any)}
         >
-          {HeaderComponent}
+          <View onLayout={this.onHeaderLayout}>{HeaderComponent}</View>
           <Animated.View style={[styles.container, containerStyle]}>
             <Animated.View
               style={[{ height: this.itemsRunwayOffset }, containerStyle]}
